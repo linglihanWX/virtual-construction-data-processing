@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.freedo.virtualconstructiondataprocessing.dao.PlanDao" >
+    <sql id="BASE_TABLE">
+        t_plan
+    </sql>
+
+    <sql id="BASE_COLUMN">
+        PlanID,BIMID,ComponentID,Type,StartDate,EndDate
+    </sql>
+
+    <insert id="insert" parameterType="com.freedo.virtualconstructiondataprocessing.model.PlanModel">
+        INSERT INTO
+        <include refid="BASE_TABLE"/>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            BIMID,ComponentID,Type,StartDate,EndDate,
+        </trim>
+        <trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+            #{bimId, jdbcType=VARCHAR},#{componentID, jdbcType=VARCHAR},#{type, jdbcType=INTEGER},#{startDate, jdbcType=DATE},#{endDate, jdbcType=DATE},
+        </trim>
+    </insert>
+
+    <select id="selectPlanById" parameterType="int" resultType="com.freedo.virtualconstructiondataprocessing.model.PlanModel">
+        SELECT
+        <include refid="BASE_COLUMN"></include>
+        FROM
+        <include refid="BASE_TABLE"></include>
+        WHERE PlanID = #{id , jdbcType=INTEGER}
+    </select>
+
+    <select id="selectPlanByCID" parameterType="string" resultType="com.freedo.virtualconstructiondataprocessing.model.PlanModel">
+        SELECT
+        <include refid="BASE_COLUMN"></include>
+        FROM
+        <include refid="BASE_TABLE"></include>
+        WHERE ComponentID = #{cid}
+    </select>
+
+    <select id="selectPlanByBCID" parameterType="string" resultType="com.freedo.virtualconstructiondataprocessing.model.PlanModel">
+        SELECT
+        <include refid="BASE_COLUMN"></include>
+        FROM
+        <include refid="BASE_TABLE"></include>
+        WHERE ComponentID = #{cid} AND BIMID = #{bid}
+    </select>
+
+    <select id="selectAllPlan" resultType="com.freedo.virtualconstructiondataprocessing.model.PlanModel">
+        SELECT
+        <include refid="BASE_COLUMN"/>
+        FROM
+        <include refid="BASE_TABLE"/>
+    </select>
+
+    <insert id="insertOrUpdate" parameterType="java.util.List">
+        insert into
+        <include refid="BASE_TABLE"/>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            PlanID,BIMID,ComponentID,Type,StartDate,EndDate,
+        </trim>
+        values
+        <foreach collection="list"  item="p" index="index" separator=",">
+            (#{p.planId},
+            #{p.bimId},
+            #{p.componentID},
+            #{p.type},
+            #{p.startDate},
+            #{p.endDate})
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+        PlanID=values(PlanID),
+        BIMID=values(BIMID),
+        ComponentID=values(ComponentID),
+        Type=values(Type),
+        StartDate=values(StartDate),
+        EndDate=values(EndDate)
+    </insert>
+
+    <delete id="removeByPBC" parameterType="java.lang.String">
+        DELETE FROM
+        <include refid="BASE_TABLE"/>
+         WHERE PlanID = #{planId , jdbcType=VARCHAR} AND BIMID = #{bimId , jdbcType=VARCHAR} AND ComponentID = #{componentId , jdbcType=VARCHAR}
+    </delete>
+</mapper>

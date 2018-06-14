@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>遍历生成结构树</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+        
+        #freedoContainer {}
+    </style>
+</head>
+
+<body>
+    <div id="freedoContainer"></div>
+    <script src="./Freedo/Freedo.js"></script>
+    <script src="./lodash/lodash.min.js"></script>
+    <script src="./FreedoX/FreedoX.js"></script>
+    <script>
+        function GetRequest() {
+            let url = decodeURIComponent(window.location.href);
+            let theRequest = {};
+            if (url !== undefined && url.length > 0) {
+                let strs = url.split("?");
+                let len = strs.length;
+                for (let i = 0; i < len; i++) {
+                    theRequest[strs[i].split("=")[0]] = strs[i].split("=")[1];
+                };
+            }
+            return theRequest;
+        }
+        debugger
+        let querys = GetRequest();
+        let url = 'https://cfgateway.gbim360.cn/freeserver-pmts/services/share/51533a3e-30d9-42cb-88a0-2d734676d151/pmts/1.0.0/PMTSCapabilities.json?accesskey=ab70f9d4-d793-4a68-88bb-6146c0271610';
+        let token = undefined;
+        if (querys.token) {
+            token = querys.token;
+            url = querys.url + '?token=' + querys.token;
+        }
+        if (querys.accesskey) {
+            url = querys.url + '?accesskey=' + querys.accesskey;
+        }
+
+        var viewer = Freedo.FdApp.createDefaultViewer('freedoContainer');
+        var imageryManager = new Freedo.FdTools.FdImageryLayersManager(viewer);
+        imageryManager.addDefaultImageryLayer();
+
+        var treeData = [];
+        if (url) {
+            let pModelInfos = [];
+
+            function recursionQuery(data) {
+                for (let item of data) {
+                    Freedo.FdServer.FdPMTSParser.getCidJson(item.layer, item.matrixSet, item.matrix, item.roottileno, item.id,
+                        token,
+                        function(json, error) {
+                            if (typeof error === 'undefined') {
+                                if (json.length > 0) {
+                                    for (let leaf of json) {
+                                        let obj = {
+                                            layer: item.layer,
+                                            title: leaf.name || leaf.Name,
+                                            matrixSet: item.matrixSet,
+                                            matrix: item.matrix,
+                                            roottileno: undefined,
+                                            id: leaf.uid,
+                                            children: [],
+                                        }
+                                        item.children.push(obj);
+                                    }
+                                     recursionQuery(item.children);
+                                }
+                            } else {
+                                console.log('error: ' + error);
+                            }
+                        });
+                }
+            }
+
+            Freedo.FdServer.FdPMTSParser.getPModelURLArray(url, function(pModelInfoArray) {
+                for (let i = 0; i < pModelInfoArray.length; i++) {
+                    let pModelInfo = pModelInfoArray[i];
+                    // 加载模型
+                    let pModel = viewer.scene.primitives.add(new Freedo.FreedoPModelset({
+                        url: pModelInfo.pModelURL
+                    }));
+
+                    pModelInfos.push({
+                        pModel: pModel,
+                        matrix: pModelInfo.matrix,
+                        matrixSet: pModelInfo.matrixSet,
+                        layer: pModelInfo.layer
+                    });
+
+                    let tree = {
+                        layer: pModelInfo.layer,
+                        matrixSet: pModelInfo.matrixSet,
+                        matrix: pModelInfo.matrix,
+                        id: pModelInfo.matrix.uid,
+                        title: pModelInfo.matrix.title,
+                        roottileno: undefined,
+                        children: [],
+                    }
+                    treeData.push(tree);
+                    pModel.readyPromise.then(function(pModel) {
+                        viewer.camera.viewBoundingSphere(pModel.boundingSphere, new Freedo.HeadingPitchRange(0, -0.5, 0));
+                        viewer.camera.lookAtTransform(Freedo.Matrix4.IDENTITY);
+                    });
+                }
+
+                console.log(treeData);
+                recursionQuery(treeData);
+                debugger
+                console.log(treeData);
+                // 递归查找所有的叶子节点
+            })
+        }
+    </script>
+</body>
+
+</html>

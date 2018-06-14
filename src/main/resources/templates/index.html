@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html >
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>虚拟建造数据处理</title>
+
+    <link rel="stylesheet" type="text/css" href=${baseContextPath}"/public/common/jquery-easyui-1.5.5.2/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href=${baseContextPath}"/public/common/jquery-easyui-1.5.5.2/themes/icon.css">
+    <script type="text/javascript" src=${baseContextPath}"/public/common/jquery-easyui-1.5.5.2/jquery.min.js"></script>
+    <script type="text/javascript" src=${baseContextPath}"/public/common/jquery-easyui-1.5.5.2/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src=${baseContextPath}"/public/common/jquery-easyui-1.5.5.2/locale/easyui-lang-zh_CN.js"></script>
+
+
+    <script type="text/javascript" src=${baseContextPath}"/public/indexPag/js/tree.js"></script>
+    <link rel="stylesheet" href="http://forweb.gbim360.com/latest/freedo/Freedo/Widgets/widgets.css">
+    <link rel="stylesheet" href="http://forweb.gbim360.com/latest/freedox/Examples/static/bucket.css">
+    <script src="http://forweb.gbim360.com/latest/freedo/Freedo/Freedo.js"></script>
+    <script src="http://forweb.gbim360.com/latest/freedox/FreedoX/ThirdParty/1710_lodash/lodash.min.js"></script>
+    <script src=${baseContextPath}"/public/common/js/FreedoX.js"></script>
+    <!--<script src="http://forweb.gbim360.com/latest/freedox/FreedoX/FreedoX.js"></script>-->
+    <script src="http://forweb.gbim360.com/latest/freedox/Examples/static/Sandcastle-header.js"></script>
+
+    <link rel="stylesheet" type="text/css" href=${baseContextPath}"/public/indexPag/css/indexPag.css">
+    <script type="text/javascript" src=${baseContextPath}"/public/indexPag/js/indexPag.js"></script>
+    <script type="text/javascript" src=${baseContextPath}"/public/indexPag/js/indexPag3D.js"></script>
+</head>
+<body>
+    <!--<h1>Welcome ${name}!</h1>
+    <h2>${baseContextPath}</h2>
+    <a href="/logout">注销</a>
+    <br />-->
+    <div id="cc" class="easyui-layout">
+        <div data-options="region:'north',title:'Welcome ${name}!',split:true" style="height:150px;">
+            <div style="height: 100%;width: 100%;">
+                <div id="pModelPlan" style="position: absolute; width: 90%;height: 100%;">
+                    <div >
+                        <div style="margin-bottom:20px ">
+                            <input id="eutbURL" class="easyui-textbox" data-options="value:'http://cfgateway.gbim360.cn/freeserver-pmts/services/share/51533a3e-30d9-42cb-88a0-2d734676d151/pmts/1.0.0/PMTSCapabilities.json?accesskey=ab70f9d4-d793-4a68-88bb-6146c0271610'" label="添加模型服务URL" labelPosition="top" style="width: 80%;">
+                        </div>
+                        <div>
+                            <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="addBtnClick()" style="width:150px;height:32px">添加</a>
+                        </div>
+                    </div>
+                </div>
+                <a href="/logout" style="float: right">注销</a>
+            </div>
+        </div>
+        <!--<div data-options="region:'south',title:'South Title',split:true" style="height:100px;"></div>-->
+       <!-- <div data-options="region:'east',title:'East',split:true" style="width:10%;"></div>-->
+        <div data-options="region:'west',title:'操作中心',split:true" style="width:25%;">
+           <!-- <button style="width: 20px;height: 20px" onclick="ceshi()"></button>-->
+            <div id="myTreeDiv" >
+            </div>
+            <div style="height: 0px;">
+                <div id="mydialog" class="easyui-dialog" style="width:800px;height:400px" closed="true"
+                     data-options="title:'数据列表',modal:true,resizable:true">
+                </div>
+            </div>
+        </div>
+        <div data-options="region:'center',title:'Earth '" style="padding:5px;background:#eee;">
+            <div id="earth" style="width: 100%;height: 100%"></div>
+        </div>
+    </div>
+</body>
+</html>
