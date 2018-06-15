@@ -21,7 +21,7 @@
                 $scope.message = '';
                 $http(
                     {
-                        url : '/loginPost',
+                        url : '${req.contextPath}/loginPost',
                         method : 'POST',
                         headers : {
                             'Content-Type' : 'application/x-www-form-urlencoded'
@@ -33,7 +33,7 @@
                         $scope.message = r.message;
                         return;
                     }
-                    window.location.href = '/';
+                    window.location.href = '${req.contextPath}/';
                 });
             }
         });
