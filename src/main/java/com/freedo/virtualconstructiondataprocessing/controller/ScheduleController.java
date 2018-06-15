@@ -34,6 +34,12 @@ public class ScheduleController {
         return "planTable/planFormData";
     }
 
+    @RequestMapping("/allplanform")
+    public String allplanform(String id,Model model){
+        model.addAttribute("id",id);
+        return "planTable/allPlanFormData";
+    }
+
     @ResponseBody
     @RequestMapping("/getallplan")
     public Object findAllPlan (){
