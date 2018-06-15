@@ -39,6 +39,8 @@
                         </div>
                         <div>
                             <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="addBtnClick()" style="width:150px;height:32px">添加</a>
+                            <input id="nowPlanId" class="easyui-textbox" data-options="value:'1'" label="当前计划ID" labelPosition="left" style="width: 10%;margin-left: 10%">
+                            <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="lookAtPlanClick()" style="width:150px;height:32px">查看当前计划</a>
                         </div>
                     </div>
                 </div>
@@ -50,9 +52,13 @@
         <div data-options="region:'west',title:'操作中心',split:true" style="width:25%;">
            <!-- <button style="width: 20px;height: 20px" onclick="ceshi()"></button>-->
             <div id="myTreeDiv" >
+                <ul id="tt" class="easyui-tree" checkbox="true" method='get' url='/public/indexPag/JSON/tree_data.json'></ul>
             </div>
             <div style="height: 0px;">
                 <div id="mydialog" class="easyui-dialog" style="width:800px;height:400px" closed="true"
+                     data-options="title:'数据列表',modal:true,resizable:true">
+                </div>
+                <div id="myplandialog" class="easyui-dialog" style="width:1600px;height:800px" closed="true"
                      data-options="title:'数据列表',modal:true,resizable:true">
                 </div>
             </div>
