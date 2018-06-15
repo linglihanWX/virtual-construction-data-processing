@@ -43,11 +43,12 @@ public class WebSecurityConfig implements WebMvcConfigurer {
         public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
                 throws Exception {
             HttpSession session = request.getSession();
-            if (session.getAttribute(SESSION_KEY) != null)
+            if (session.getAttribute(SESSION_KEY) != null) {
                 return true;
+            }
 
             // 跳转登录
-            String url = "/login";
+            String url = request.getContextPath()+"/login";
             response.sendRedirect(url);
             return false;
         }
