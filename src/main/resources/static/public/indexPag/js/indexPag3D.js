@@ -8,9 +8,29 @@ $(function () {
     //$.parser.parse();
     GlobalViewer = initEarth("earth");
     initLiftClik()
-    /*var jimeidashaUrl = "http://cfgateway.gbim360.cn/freeserver-pmts/services/share/51533a3e-30d9-42cb-88a0-2d734676d151/pmts/1.0.0/PMTSCapabilities.json?accesskey=ab70f9d4-d793-4a68-88bb-6146c0271610"
-    var nowshuju = addPmdoel(jimeidashaUrl);*/
-    //debugger
+    $('#tt').tree({
+        onClick: function(node){
+            if (node.id!=0){
+                nodeClick(node);
+                //console.log(1)
+                console.log(node)
+            }
+            //alert(node.text);  // alert node text property when clicked
+        }
+    });
+    $('#tt').tree({
+        onContextMenu: function (e, node) {
+            e.preventDefault();
+            nodeExpand(node)
+            //console.log(0)
+            console.log(node)
+        }
+    });
+    $('#tt').tree({
+        onCheck: function (node, state) {
+            onNodeCheckboxCheck(node,state);
+        }
+    });
 })
 
 function initEarth(containerID) {
@@ -25,8 +45,6 @@ function initEarth(containerID) {
 }
 
 function addBtnClick() {
-   //console.log($("#eutbURL").val());
-    //var jimeidashaUrl = "http://cfgateway.gbim360.cn/freeserver-pmts/services/share/51533a3e-30d9-42cb-88a0-2d734676d151/pmts/1.0.0/PMTSCapabilities.json?accesskey=ab70f9d4-d793-4a68-88bb-6146c0271610"
     addPmdoel($("#eutbURL").val());
 }
 
@@ -43,6 +61,7 @@ function addPmdoel(url) {
                 }));
                 console.log(pModelInfo.pModelURL)
                 pModelInfos.push({
+                    mystate: true,
                     pModel: pModel,
                     matrix: pModelInfo.matrix,
                     matrixSet: pModelInfo.matrixSet,
@@ -65,34 +84,27 @@ function addPmdoel(url) {
 
         promise.then(function (res) {
             for (var i in pModelInfos) {
-                var pModelInfo = pModelInfos[i];
-                var rootTree = {
-                    layer: pModelInfo.layer,
-                    matrixSet: pModelInfo.matrixSet,
-                    matrix: pModelInfo.matrix,
-                    title: pModelInfo.matrix.title,
-                    uid: pModelInfo.matrix.uid,
-                    child: [{}],
+                if (pModelInfos[i].mystate){
+                    var pModelInfo = pModelInfos[i];
+                    var rootTree = {
+                        tpModelInfo:pModelInfo,
+                        id: pModelInfo.layer.identifier+"___"+pModelInfo.matrix.identifier,
+                        text: pModelInfo.matrix.title,
+                        title: pModelInfo.matrix.title,
+                        uid: pModelInfo.matrix.uid,
+                        //state : 'closed',
+                        checked : true,
+                        children: [],
+                    }
+                    var node = $('#tt').tree('find', 0);
+                    $('#tt').tree('append', {
+                        parent: node.target,
+                        data:rootTree
+                    })
+                    pModelInfos[i].mystate = false;
                 }
-                treeSet.addRootTree = rootTree;
             }
             console.log(pModelInfos)
-            if(!$("#myTreeDiv >ul")[0]){
-                // 初始化创建结构树
-                var html = treeSet.createTree({
-                    onNodeClick: nodeClick,
-                    onNodeExpand: nodeExpand,
-
-                });
-                //console.log($("#myTreeDiv >ul")[0])
-                // 拼接结果
-                var tree = document.getElementById('myTreeDiv');
-                tree.append(html);
-            }else {
-                var tree = document.getElementById('myTreeDiv');
-                tree.innerHTML = "";
-                tree.append(treeSet.renderTree(treeSet.treeArray));
-            }
         })
 
     });
@@ -160,6 +172,103 @@ function pickComponent(windowPosition, retAncestorComponents, selectedCallback) 
     selectedCallback();
 }
 
+function onNodeCheckboxCheck(node,state) {
+    if (node){
+        node.tpModelInfo.pModel.style = new Freedo.FreedoPModelStyle({
+            /*color: {
+                conditions: [
+                    ['${component} ~== \'' + node.uid + '\'',
+                        'rgba(255, 0, 0, 1.0)'
+                    ],
+                    ['true', 'color("white")']
+                ]
+            },*/
+            show: {
+                conditions: [
+                    ['${component} ~== \'' + node.uid + '\'', ''+state+''],
+                    ['true', 'true']
+                ]
+            },
+        });
+    }
+
+    /*pModel.style = new Freedo.FreedoPModelStyle({
+        show: {
+            conditions: [
+                ['${component} ~== \'' + componentID + '\'', 'false'],
+                ['true', 'true']
+            ]
+        },
+    });*/
+    console.log(node)
+    console.log(state)
+}
+
+function nodeClick(node) {
+    //console.log('node', data, node);
+   /* var pModelInfo = pModelInfos.find(function (element) {
+        return element.matrix === data.matrix;
+    });*/
+    if(node.tpModelInfo){
+        nowSelectedPModelInfo = node.tpModelInfo;
+        nowSelectedComponentID = node.uid;
+        $('#mydialog').window('open');
+        $('#mydialog').dialog('refresh', 'plan/form?id='+nowSelectedComponentID+'&modelId='+nowSelectedPModelInfo.layer.identifier+'___'+nowSelectedPModelInfo.matrix.identifier);
+        nowSelectedPModelInfo.pModel.style = new Freedo.FreedoPModelStyle({
+            color: {
+                conditions: [
+                    ['${component} ~== \'' + nowSelectedComponentID + '\'',
+                        'rgba(255, 0, 0, 1.0)'
+                    ],
+                    ['true', 'color("white")']
+                ]
+            },
+            show: 'true',
+        });
+    }
+}
+
+function nodeExpand( node) {
+    if (node.children.length != 0 ) {
+        return false;
+    } else {
+        node.children = [];
+    }
+    Freedo.FdServer.FdPMTSParser.getCidJson(node.tpModelInfo.layer, node.tpModelInfo.matrixSet, node.tpModelInfo.matrix, node.tpModelInfo.matrixSet.roottileno, node.uid, token, function (json, error) {
+        if (typeof error === 'undefined') {
+            var objArray = []
+            for (var i in json) {
+                var item = json[i]
+                var obj = {
+                    tpModelInfo: node.tpModelInfo,
+                    id: item.uid,
+                    text: item.name || item.Name,
+                    uid: item.uid,
+                    checked : true,
+                    children: [],
+                }
+                //data.child.push(obj);
+                objArray.push(obj)
+            }
+            $('#tt').tree('append', {
+                parent: node.target,
+                data:objArray
+            })
+            // console.log(data);
+            //treeSet.addNode(data.child, node);
+        } else {
+            console.log('error: ' + error);
+        }
+    })
+}
+
+function lookAtPlanClick() {
+    var id = $('#nowPlanId').val();
+    $('#myplandialog').window('open');
+    $('#myplandialog').dialog('refresh', 'plan/allplanform?id='+id);
+}
+
+/*
 function nodeClick(data, node) {
     console.log('node', data, node);
     var pModelInfo = pModelInfos.find(function (element) {
@@ -211,4 +320,4 @@ function nodeExpand(data, node) {
             console.log('error: ' + error);
         }
     })
-}
+}*/
