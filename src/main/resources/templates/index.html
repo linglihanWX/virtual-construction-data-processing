@@ -11,7 +11,7 @@
     <script type="text/javascript" src="${req.contextPath}/public/common/jquery-easyui-1.5.5.2/locale/easyui-lang-zh_CN.js"></script>
 
 
-    <script type="text/javascript" src=${req.contextPath}"/public/indexPag/js/tree.js"></script>
+    <script type="text/javascript" src="${req.contextPath}/public/indexPag/js/tree.js"></script>
     <link rel="stylesheet" href="http://forweb.gbim360.com/latest/freedo/Freedo/Widgets/widgets.css">
     <link rel="stylesheet" href="http://forweb.gbim360.com/latest/freedox/Examples/static/bucket.css">
     <script src="http://forweb.gbim360.com/latest/freedo/Freedo/Freedo.js"></script>
@@ -52,7 +52,7 @@
         <div data-options="region:'west',title:'操作中心',split:true" style="width:25%;">
            <!-- <button style="width: 20px;height: 20px" onclick="ceshi()"></button>-->
             <div id="myTreeDiv" >
-                <ul id="tt" class="easyui-tree" checkbox="true" method='get' url='/public/indexPag/JSON/tree_data.json'></ul>
+                <ul id="tt" class="easyui-tree" checkbox="true" method='get' url='${req.contextPath}/public/indexPag/JSON/tree_data.json'></ul>
             </div>
             <div style="height: 0px;">
                 <div id="mydialog" class="easyui-dialog" style="width:800px;height:400px" closed="true"

@@ -3,7 +3,7 @@
 				iconCls: 'icon-edit',
 				singleSelect: true,
 				toolbar: '#tb',
-				url: './plan/getplanbybcid?cid=${id}&bid=${bimModelID}',
+				url: '${req.contextPath}/plan/getplanbybcid?cid=${id}&bid=${bimModelID}',
 				method: 'get',
 				onClickRow: onClickRow
 			">
@@ -19,7 +19,7 @@
 								valueField:'productid',
 								textField:'productname',
 								method:'get',
-								url:'/public/indexPag/JSON/products.json',
+								url:'${req.contextPath}/public/indexPag/JSON/products.json',
 								required:true
 							}
 						}">计划ID</th>
@@ -135,7 +135,7 @@
         console.log($('#dg').datagrid('getSelected'))
         var mydata = $('#dg').datagrid('getSelected')
         $.ajax({
-            url:"/plan/removebypbc",
+            url:"./plan/removebypbc",
             type:"post",
             dataType:"json",
             data:mydata,
@@ -166,7 +166,7 @@
             var mydata = {mydata:nowGridData};
             console.log(mydata)
             $.ajax({
-                url:"/plan/insertorupdata",
+                url:"./plan/insertorupdata",
                 type:"post",
                 dataType:"json",
                 data:mydata,
